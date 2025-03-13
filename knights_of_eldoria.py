@@ -87,12 +87,63 @@ class TreasureHunter:
         self.stamina = min(100, self.stamina + 1)
 
 
-# Testing the Grid, Treasure, and TreasureHunter classes
+class Hideout:
+    """Represents a hideout where hunters can store treasure and rest."""
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.hunters = []
+
+    def store_treasure(self, hunter):
+        """Allows a hunter to store collected treasure."""
+        if hunter.treasure:
+            print(f"Treasure {hunter.treasure.type} stored in hideout.")
+            hunter.treasure = None
+
+    def rest_hunters(self):
+        """Allows all hunters in the hideout to regain stamina."""
+        for hunter in self.hunters:
+            hunter.rest()
+
+
+class Knight:
+    """Represents a knight who patrols and chases hunters."""
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.energy = 100
+        self.target = None
+
+    def patrol(self, hunters, grid):
+        """Look for hunters and chase if within a 3-cell radius."""
+        for hunter in hunters:
+            if abs(self.x - hunter.x) + abs(self.y - hunter.y) <= 3:
+                self.target = hunter
+                self.chase(grid)
+                break
+
+    def chase(self, grid):
+        """Move towards the detected hunter and drain energy."""
+        if self.target:
+            dx = 1 if self.target.x > self.x else -1 if self.target.x < self.x else 0
+            dy = 1 if self.target.y > self.y else -1 if self.target.y < self.y else 0
+            self.x, self.y = grid.wrap_coordinates(self.x + dx, self.y + dy)
+            self.energy -= 20
+            print(f"Knight is chasing hunter at {self.target.x}, {self.target.y}")
+
+
+# Testing the Grid, Treasure, TreasureHunter, Hideout, and Knight classes
 if __name__ == "__main__":
     grid = Grid(10)
     treasure = Treasure(2, 3, "gold")
     hunter = TreasureHunter(0, 0, "navigation")
+    hideout = Hideout(5, 5)
+    knight = Knight(7, 7)
 
     print("Grid initialized with size 10x10.")
     print(f"Treasure placed at ({treasure.x}, {treasure.y}) with value {treasure.value}.")
     print(f"Hunter initialized at ({hunter.x}, {hunter.y}) with skill {hunter.skill}.")
+    print(f"Hideout placed at ({hideout.x}, {hideout.y}).")
+    print(f"Knight initialized at ({knight.x}, {knight.y}).")
