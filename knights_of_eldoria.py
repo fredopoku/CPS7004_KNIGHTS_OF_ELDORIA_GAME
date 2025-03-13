@@ -134,16 +134,45 @@ class Knight:
             print(f"Knight is chasing hunter at {self.target.x}, {self.target.y}")
 
 
-# Testing the Grid, Treasure, TreasureHunter, Hideout, and Knight classes
-if __name__ == "__main__":
-    grid = Grid(10)
-    treasure = Treasure(2, 3, "gold")
-    hunter = TreasureHunter(0, 0, "navigation")
-    hideout = Hideout(5, 5)
-    knight = Knight(7, 7)
+class Simulation:
+    """Controls the game flow and updates all entities."""
 
-    print("Grid initialized with size 10x10.")
-    print(f"Treasure placed at ({treasure.x}, {treasure.y}) with value {treasure.value}.")
-    print(f"Hunter initialized at ({hunter.x}, {hunter.y}) with skill {hunter.skill}.")
-    print(f"Hideout placed at ({hideout.x}, {hideout.y}).")
-    print(f"Knight initialized at ({knight.x}, {knight.y}).")
+    def __init__(self, grid_size=20):
+        self.grid = Grid(grid_size)
+        self.hunters = []
+        self.knights = []
+        self.hideouts = []
+        self.treasures = []
+        self.steps = 0
+
+    def run(self):
+        """Runs the simulation step by step."""
+        while self.treasures and self.hunters:
+            self.steps += 1
+            print(f"Simulation Step {self.steps}")
+
+            for hunter in self.hunters:
+                hunter.move(self.grid, random.choice([-1, 0, 1]), random.choice([-1, 0, 1]))
+                hunter.collect_treasure(self.treasures)
+
+            for knight in self.knights:
+                knight.patrol(self.hunters, self.grid)
+
+            for treasure in self.treasures:
+                treasure.decay()
+
+            self.treasures = [t for t in self.treasures if t.value > 0]
+
+            if not self.hunters:
+                print("All hunters have been eliminated! Simulation Over.")
+                break
+
+
+# Running the simulation
+def main():
+    simulation = Simulation(grid_size=20)
+    simulation.run()
+
+
+if __name__ == "__main__":
+    main()
