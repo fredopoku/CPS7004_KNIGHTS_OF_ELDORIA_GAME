@@ -103,11 +103,15 @@ class Simulation:
         self.running = True
 
     def run(self):
-        while self.running and self.treasures and self.hunters:
-            self.steps += 1
+        while self.running:
+            screen.fill(WHITE)
+
+            # Event handling to keep window open
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+
+            self.steps += 1
 
             self.hunters = [hunter for hunter in self.hunters if hunter.move(self.grid, self.treasures)]
             for hunter in self.hunters:
@@ -125,16 +129,17 @@ class Simulation:
 
             self.draw()
             clock.tick(FPS)
+
         pygame.quit()
 
     def draw(self):
-        screen.fill(WHITE)
         for hunter in self.hunters:
             pygame.draw.rect(screen, GREEN, (hunter.x * CELL_SIZE, hunter.y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
         for knight in self.knights:
             pygame.draw.rect(screen, RED, (knight.x * CELL_SIZE, knight.y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
         for treasure in self.treasures:
             pygame.draw.rect(screen, YELLOW, (treasure.x * CELL_SIZE, treasure.y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+
         pygame.display.flip()
 
 
